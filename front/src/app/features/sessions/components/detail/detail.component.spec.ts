@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { RouterTestingModule, } from '@angular/router/testing';
-import { expect } from '@jest/globals'; 
+import { expect } from '@jest/globals';
 import { SessionService } from '../../../../services/session.service';
 
 import { DetailComponent } from './detail.component';
@@ -11,7 +11,7 @@ import { DetailComponent } from './detail.component';
 
 describe('DetailComponent', () => {
   let component: DetailComponent;
-  let fixture: ComponentFixture<DetailComponent>; 
+  let fixture: ComponentFixture<DetailComponent>;
   let service: SessionService;
 
   const mockSessionService = {
@@ -29,7 +29,7 @@ describe('DetailComponent', () => {
         MatSnackBarModule,
         ReactiveFormsModule
       ],
-      declarations: [DetailComponent], 
+      declarations: [DetailComponent],
       providers: [{ provide: SessionService, useValue: mockSessionService }],
     })
       .compileComponents();
