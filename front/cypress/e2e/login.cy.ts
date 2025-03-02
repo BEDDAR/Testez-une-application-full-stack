@@ -12,6 +12,13 @@ describe('Login spec', () => {
       },
     })
 
+    cy.intercept('GET', '/api/teacher', {
+      body: [
+        { id: 345, lastName: "teacher1", firstName: "teacher" },
+        { id: 346, lastName: "teacher2", firstName: "another" }
+      ]
+    }).as('getTeachers');
+
     cy.intercept(
       {
         method: 'GET',
@@ -23,5 +30,6 @@ describe('Login spec', () => {
     cy.get('input[formControlName=password]').type(`${"test!1234"}{enter}{enter}`)
 
     cy.url().should('include', '/sessions')
+    cy.contains('button', 'Create').click()
   })
 });

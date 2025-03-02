@@ -143,8 +143,11 @@ describe('FormComponent', () => {
       description: sessionData.description
     });
 
+    component.onUpdate = false;
+
     // Mock de la fonction update de l'API
     jest.spyOn(sessionApiService, 'update').mockReturnValue(of(sessionData));
+    jest.spyOn(sessionApiService, 'detail').mockReturnValue(of(sessionData))
 
     // Mock de la route avec un id "1"
     mockActivatedRoute.snapshot = {
@@ -174,18 +177,34 @@ describe('FormComponent', () => {
         teacher_id: sessionData.teacher_id,
         description: sessionData.description
       }));
+
+      // Vérifier que la fonction update a bien été appelée
+      expect(sessionApiService.detail).toHaveBeenCalledWith('1')
+
       expect((component as any).submit()).toHaveBeenCalled
+      expect((component as any).initForm()).toHaveBeenCalled
       // Vérifier que le snackBar a bien été appelé
       expect(matSnackBar.open).toHaveBeenCalledWith('Session updated !', 'Close', { duration: 3000 });
 
       // Vérifier que la navigation a bien eu lieu
       expect(router.navigate).toHaveBeenCalledWith(['sessions']); // S'assurer que la navigation se fait bien vers "sessions"
-      expect(component.onUpdate).toBeTruthy;
+      expect(component.onUpdate).toBe(true);
       // Vérifier que l'ID est bien récupéré
       expect(mockActivatedRoute.snapshot.paramMap.get('id')).toBe('1');
       expect(mockActivatedRoute.snapshot.url[0].path).toBe('update/1');
     });
   });
+
+  it('should redirect to session when user is not admin', () => {
+
+    mockSessionService.sessionInformation.admin=false
+    component.ngOnInit();
+
+    fixture.detectChanges();
+
+    expect(router.navigate).toHaveBeenCalledWith(['/sessions']);
+
+    });
 
 
   it('should show errors when required fields are missing', () => {
