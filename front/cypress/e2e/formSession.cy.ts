@@ -15,8 +15,15 @@ describe('form session spec', () => {
       });
     }).as('getUser');
 
-    // Intercept session request (GET)
-    cy.intercept('GET', '/api/session', []).as('getSessions');
+       // Intercept session request (GET)
+       cy.intercept('GET', '/api/session', [{
+        id:1,
+        name: 'Physique Class',
+        date: '2025-02-23',
+        teacher_id: 345,
+        description: 'Advanced physique class',
+        users: []
+      }]).as('getSessions');
 
     // Intercept session creation request (POST)
     cy.intercept('POST', '/api/session', {
@@ -29,6 +36,27 @@ describe('form session spec', () => {
       },
     }).as('createSession');
 
+    cy.intercept('GET', '/api/session/1', {
+      body: {
+        id:1,
+        name: 'Physique Class',
+        date: '2025-02-23',
+        teacher_id: 345,
+        description: 'Advanced physique class',
+        users: []
+      },
+    }).as('getSession');
+
+    cy.intercept('PUT', '/sessions/update/1', {
+      body: {
+        name: 'math Class',
+        date: '2025-02-23',
+        teacher_id: 345,
+        description: 'Advanced physique class',
+        users: []
+      },
+    }).as('updateSession');
+
     cy.intercept('GET', '/api/teacher', {
       body: [
         { id: 345, lastName: "teacher1", firstName: "teacher" },
@@ -36,7 +64,11 @@ describe('form session spec', () => {
       ]
     }).as('getTeachers');
 
-
+    cy.intercept('GET', '/api/teacher/345', {
+      body: [
+        { id: 345, lastName: "teacher1", firstName: "teacher" }
+      ]
+    }).as('getTeacher');
 
     // Visit login page
     cy.visit('/login');
@@ -53,7 +85,7 @@ describe('form session spec', () => {
 
   it('should click on Create button and navigate to /sessions/create', () => {
 
-  cy.get('button[mat-raised-button]', { timeout: 10000 })  // Attendre jusqu'à 10 secondes
+  cy.get('button[mat-raised-button]', { timeout: 10000 }).eq(0)  // Attendre jusqu'à 10 secondes
   .should('not.be.disabled')  // Vérifie que le bouton n'est pas désactivé
   .should('be.visible')  // Vérifie qu'il est visible
   .click({ force: true });  // Clique sur le bouton
@@ -63,7 +95,7 @@ describe('form session spec', () => {
   });
 
   it('create session successful', () => {
-    cy.get('button[mat-raised-button]', { timeout: 10000 })  // Attendre jusqu'à 10 secondes
+    cy.get('button[mat-raised-button]', { timeout: 10000 }).eq(0)  // Attendre jusqu'à 10 secondes
     .should('not.be.disabled')  // Vérifie que le bouton n'est pas désactivé
     .should('be.visible')  // Vérifie qu'il est visible
     .click({ force: true });  // Clique sur le bouton
@@ -76,6 +108,28 @@ describe('form session spec', () => {
     cy.get('mat-option').should('exist').contains('teacher1').click();  // Sélectionner l'enseignant
 
     cy.get('textarea[formControlName=description]').type("Advanced physique class{enter}{enter}");
+
+    // Assert that the user is redirected back to the /sessions page after successful creation
+    cy.url().should('include', '/sessions');
+  });
+
+  it('update session successful', () => {
+    cy.get('button[mat-raised-button]', { timeout: 10000 }).eq(2)
+    .should('not.be.disabled')
+    .should('be.visible')
+    .click({ force: true });
+    cy.url().should('include', '/sessions/update/1');
+    cy.wait('@getSession');
+
+    // Fill out the session creation form
+    cy.get('input[formControlName=name]').type("math Class");
+    cy.get('input[formControlName=date]').type("2025-02-23");
+    cy.wait('@getTeachers');  // Attendre la récupération des enseignants
+    cy.get('mat-select[formControlName=teacher_id]').click();  // Ouvrir le menu déroulant
+    cy.get('mat-option').should('exist').contains('teacher1').click();  // Sélectionner l'enseignant
+
+    cy.get('textarea[formControlName=description]').type("Advanced physique class{enter}{enter}");
+
     // Assert that the user is redirected back to the /sessions page after successful creation
     cy.url().should('include', '/sessions');
   });
