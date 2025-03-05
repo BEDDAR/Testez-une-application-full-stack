@@ -133,4 +133,65 @@ describe('form session spec', () => {
     // Assert that the user is redirected back to the /sessions page after successful creation
     cy.url().should('include', '/sessions');
   });
+
+  it('should show error when date field is missing in session creation form', () => {
+    cy.get('button[mat-raised-button]', { timeout: 10000 }).eq(0)  // Attendre jusqu'à 10 secondes
+    .should('not.be.disabled')  // Vérifie que le bouton n'est pas désactivé
+    .should('be.visible')  // Vérifie qu'il est visible
+    .click({ force: true });  // Clique sur le bouton
+    // Tenter de soumettre le formulaire sans remplir les champs obligatoires
+    cy.get('button[mat-raised-button]').should('be.disabled')
+    cy.get('input[formControlName=name]').type("math Class");
+    cy.wait('@getTeachers');  // Attendre la récupération des enseignants
+    cy.get('mat-select[formControlName=teacher_id]').click();  // Ouvrir le menu déroulant
+    cy.get('mat-option').should('exist').contains('teacher1').click();
+    cy.get('textarea[formControlName=description]').type("Advanced physique class");
+    cy.get('button[mat-raised-button]').should('be.disabled')
+
+  });
+  it('should show error when name field is missing in session creation form', () => {
+    cy.get('button[mat-raised-button]', { timeout: 10000 }).eq(0)  // Attendre jusqu'à 10 secondes
+    .should('not.be.disabled')  // Vérifie que le bouton n'est pas désactivé
+    .should('be.visible')  // Vérifie qu'il est visible
+    .click({ force: true });  // Clique sur le bouton
+    // Tenter de soumettre le formulaire sans remplir les champs obligatoires
+    cy.get('button[mat-raised-button]').should('be.disabled')
+    cy.get('input[formControlName=date]').type("2025-02-23");
+    cy.wait('@getTeachers');  // Attendre la récupération des enseignants
+    cy.get('mat-select[formControlName=teacher_id]').click();  // Ouvrir le menu déroulant
+    cy.get('mat-option').should('exist').contains('teacher1').click();
+    cy.get('textarea[formControlName=description]').type("Advanced physique class");
+    cy.get('button[mat-raised-button]').should('be.disabled')
+
+  });
+
+  it('should show error when teacher field is missing in session creation form', () => {
+    cy.get('button[mat-raised-button]', { timeout: 10000 }).eq(0)  // Attendre jusqu'à 10 secondes
+    .should('not.be.disabled')  // Vérifie que le bouton n'est pas désactivé
+    .should('be.visible')  // Vérifie qu'il est visible
+    .click({ force: true });  // Clique sur le bouton
+    // Tenter de soumettre le formulaire sans remplir les champs obligatoires
+    cy.get('button[mat-raised-button]').should('be.disabled')
+    cy.get('input[formControlName=name]').type("math Class");
+    cy.get('input[formControlName=date]').type("2025-02-23");
+    cy.wait('@getTeachers');  // Attendre la récupération des enseignants
+    cy.get('mat-select[formControlName=teacher_id]').click();  // Ouvrir le menu déroulant
+    cy.get('mat-option').should('exist').contains('teacher1').click();
+    cy.get('button[mat-raised-button]').should('be.disabled')
+
+  });
+
+  it('should show error when description field is missing in session creation form', () => {
+    cy.get('button[mat-raised-button]', { timeout: 10000 }).eq(0)  // Attendre jusqu'à 10 secondes
+    .should('not.be.disabled')  // Vérifie que le bouton n'est pas désactivé
+    .should('be.visible')  // Vérifie qu'il est visible
+    .click({ force: true });  // Clique sur le bouton
+    // Tenter de soumettre le formulaire sans remplir les champs obligatoires
+    cy.get('button[mat-raised-button]').should('be.disabled')
+    cy.get('input[formControlName=name]').type("math Class");
+    cy.get('input[formControlName=date]').type("2025-02-23");
+    cy.get('textarea[formControlName=description]').type("Advanced physique class");
+    cy.get('button[mat-raised-button]').should('be.disabled')
+
+  });
 });

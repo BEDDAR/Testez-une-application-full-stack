@@ -19,4 +19,15 @@ describe('register spec', () => {
 
     cy.url().should('include', '/login')
   });
+
+  it('should button be disabled if required fields are empty', () => {
+    // Laisser certains champs vides
+    cy.get('input[formControlName=firstName]').clear();
+    cy.get('input[formControlName=lastName]').clear();
+    cy.get('input[formControlName=email]').clear();
+    cy.get('input[formControlName=password]').clear();
+
+    // Soumettre le formulaire
+    cy.get('button[type="submit"]').should('be.disabled');
+  });
 });
