@@ -1,4 +1,4 @@
-package com.openclassrooms.starterjwt.controllersTest.securityTest;
+package com.openclassrooms.starterjwt.securityTest;
 import com.openclassrooms.starterjwt.security.WebSecurityConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
