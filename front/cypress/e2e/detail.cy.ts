@@ -112,7 +112,7 @@ describe('detail session spec', () => {
   cy.wait('@getSessions');
 
   // Vérifier que la liste des sessions est vide
-  cy.get('table tbody tr').should('not.exist'); // Si les sessions s'affichent dans un tableau
+  cy.get('table tbody tr').should('not.exist');
   });
 
 });
