@@ -1,4 +1,4 @@
-describe('list session spec', () => {
+describe('list session spec for admin', () => {
   beforeEach(() => {
     // Intercept login request
     cy.intercept('POST', '/api/auth/login', (req) => {
@@ -24,6 +24,16 @@ describe('list session spec', () => {
     description: 'Advanced physique class',
     users: []
   }]).as('getSessions');
+
+  // Intercept session request (GET)
+  cy.intercept('GET', '/api/session/1', [{
+    id:1,
+    name: 'Physique Class',
+    date: '2025-02-23',
+    teacher_id: 345,
+    description: 'Advanced physique class',
+    users: []
+  }]).as('getSession');
 
     // Intercept session creation request (POST)
     cy.intercept('POST', '/api/session', {
@@ -88,4 +98,5 @@ describe('list session spec', () => {
     .should('not.be.disabled')  // Vérifie que le bouton n'est pas désactivé
     .should('be.visible')
   });
+
 });

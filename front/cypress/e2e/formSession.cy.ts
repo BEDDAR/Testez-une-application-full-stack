@@ -94,6 +94,48 @@ describe('form session spec', () => {
   cy.url().should('include', '/sessions/create');
   });
 
+  it('should display "Create session" in creation mode', () => {
+    cy.get('button[mat-raised-button]').eq(0).click();
+    cy.contains('h1', 'Create session');
+  });
+
+  it('should display "Update session" in update mode', () => {
+    cy.get('button[mat-raised-button]').eq(2).click();
+    cy.contains('h1', 'Update session');
+  });
+
+  it('should go back when clicking on arrow_back', () => {
+    cy.get('button[mat-raised-button]').eq(0).click();
+    cy.get('button[routerlink="/sessions"] mat-icon').click({ force: true });
+    cy.url().should('include', '/sessions');
+  });
+
+  it('should fail gracefully on API error when creating session', () => {
+    cy.intercept('POST', '/api/session', {
+      statusCode: 500,
+      body: {}
+    }).as('createError');
+
+    cy.get('button[mat-raised-button]').eq(0).click();
+    cy.get('input[formControlName=name]').type("New Session");
+    cy.get('input[formControlName=date]').type("2025-02-23");
+    cy.wait('@getTeachers');
+    cy.get('mat-select[formControlName=teacher_id]').click();
+    cy.get('mat-option').contains('teacher1').click();
+    cy.get('textarea[formControlName=description]').type("Something");
+
+    cy.get('button[type="submit"]').click();
+    cy.wait('@createError');
+    cy.url().should('include', '/sessions/create');
+  });
+
+  it('should show form pre-filled in update mode', () => {
+    cy.get('button[mat-raised-button]').eq(2).click();
+    cy.wait('@getSession');
+    cy.get('input[formControlName=name]').should('have.value', 'Physique Class');
+    cy.get('textarea[formControlName=description]').should('have.value', 'Advanced physique class');
+  });
+
   it('create session successful', () => {
     cy.get('button[mat-raised-button]', { timeout: 10000 }).eq(0)  // Attendre jusqu'à 10 secondes
     .should('not.be.disabled')  // Vérifie que le bouton n'est pas désactivé

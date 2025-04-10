@@ -17,8 +17,6 @@ describe('Logout spec', () => {
       []).as('session');
   });
 
-
-
   it('should successfully login with correct credentials and logout successfully', () => {
     // Intercept a successful login request
     cy.intercept('POST', '/api/auth/login', {

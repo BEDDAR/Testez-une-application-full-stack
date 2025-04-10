@@ -2,29 +2,6 @@ describe('Me spec', () => {
   beforeEach(() => {
     cy.visit('/login');
 
-    cy.intercept('POST', '/api/auth/login', {
-      body: {
-        id: 1,
-        username: 'userName',
-        firstName: 'firstName',
-        lastName: 'lastName',
-        admin: true
-      },
-    }).as('getUser');
-
-    cy.intercept('GET', '/api/user/1', {
-      body: {
-        id: 1,
-        username: 'userName',
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'yoga@studio.com',
-        admin: true,
-        createdAt: '2025-01-01T00:00:00.000Z',
-        updatedAt: '2025-02-01T00:00:00.000Z'
-      },
-    }).as('getUserById');
-
     cy.intercept('GET', '/api/teacher', {
       body: [
         { id: 345, lastName: "teacher1", firstName: "teacher" },
@@ -40,25 +17,76 @@ describe('Me spec', () => {
       []
     ).as('session');
 
+    cy.intercept('DELETE', '/api/user/1', {}).as('deleteUser');
+  });
+
+  it('should find the Account span, click on it, and navigate to /me', () => {
+    cy.intercept('POST', '/api/auth/login', {
+      body: {
+        id: 1,
+        username: 'userName',
+        firstName: 'John',
+        lastName: 'Doe',
+        admin: true
+      },
+    }).as('login');
+
+    cy.intercept('GET', '/api/user/1', {
+      body: {
+        id: 2,
+        username: 'userName',
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'yoga@studio.com',
+        admin: true,
+        createdAt: '2025-01-01T00:00:00.000Z',
+        updatedAt: '2025-02-01T00:00:00.000Z'
+      },
+    }).as('getUser');
     cy.get('input[formControlName=email]').type("yoga@studio.com");
     cy.get('input[formControlName=password]').type(`${"test!1234"}{enter}{enter}`);
 
     cy.url().should('include', '/sessions');
-  });
 
-  it('should find the Account span, click on it, and navigate to /me', () => {
-    // Vérifier que la span existe et est visible
     cy.get('span.link[routerLink="me"]')
       .should('be.visible')  // Vérifie qu'elle est visible
       .and('contain', 'Account')  // Vérifie que le texte est bien "Account"
       .click();  // Clique dessus
 
-    // Vérifier la redirection vers /me
+    cy.wait('@getUser');
     cy.url().should('include', '/me');
   });
 
   it('should find the Logout span, click on it, and navigate to /', () => {
-    // Vérifier que la span "Logout" existe et est visible
+
+    cy.intercept('POST', '/api/auth/login', {
+      body: {
+        id: 1,
+        username: 'userName',
+        firstName: 'John',
+        lastName: 'Doe',
+        admin: true
+      },
+    }).as('login');
+
+    cy.intercept('GET', '/api/user/1', {
+      body: {
+        id: 2,
+        username: 'userName',
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'yoga@studio.com',
+        admin: true,
+        createdAt: '2025-01-01T00:00:00.000Z',
+        updatedAt: '2025-02-01T00:00:00.000Z'
+      },
+    }).as('getUser');
+
+    cy.get('input[formControlName=email]').type("yoga@studio.com");
+    cy.get('input[formControlName=password]').type(`${"test!1234"}{enter}{enter}`);
+
+    cy.url().should('include', '/sessions');
+
     cy.get('span.link')
       .contains('Logout')  // Vérifie que le texte est bien "Logout"
       .should('be.visible')  // Vérifie qu'elle est visible
@@ -69,9 +97,40 @@ describe('Me spec', () => {
   });
 
   it('should display correct user information', () => {
-    // Aller à la page /me après le login
-    cy.get('span.link[routerLink="me"]').click();
-    cy.url().should('include', '/me');
+    cy.intercept('POST', '/api/auth/login', {
+      body: {
+        id: 1,
+        username: 'userName',
+        firstName: 'John',
+        lastName: 'Doe',
+        admin: true
+      },
+    }).as('login');
+
+    cy.intercept('GET', '/api/user/1', {
+      body: {
+        id: 2,
+        username: 'userName',
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'yoga@studio.com',
+        admin: true,
+        createdAt: '2025-01-01T00:00:00.000Z',
+        updatedAt: '2025-02-01T00:00:00.000Z'
+      },
+    }).as('getUser');
+
+    cy.get('input[formControlName=email]').type("yoga@studio.com");
+    cy.get('input[formControlName=password]').type(`${"test!1234"}{enter}{enter}`);
+
+    cy.url().should('include', '/sessions');
+
+    cy.get('span.link[routerLink="me"]')
+      .should('be.visible')  // Vérifie qu'elle est visible
+      .and('contain', 'Account')  // Vérifie que le texte est bien "Account"
+      .click();  // Clique dessus
+
+    cy.wait('@getUser');
 
     // Vérifier que le nom complet est bien affiché
     cy.get('p').contains('Name: John DOE').should('be.visible');
@@ -88,4 +147,92 @@ describe('Me spec', () => {
     // Vérifier si l'utilisateur est admin
     cy.get('p').contains('You are admin').should('be.visible');
   });
-});
+
+  it('should navigate to the previous page.', () => {
+
+    cy.intercept('POST', '/api/auth/login', {
+      body: {
+        id: 1,
+        username: 'userName',
+        firstName: 'John',
+        lastName: 'Doe',
+        admin: true
+      },
+    }).as('login');
+
+    cy.intercept('GET', '/api/user/1', {
+      body: {
+        id: 2,
+        username: 'userName',
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'yoga@studio.com',
+        admin: true,
+        createdAt: '2025-01-01T00:00:00.000Z',
+        updatedAt: '2025-02-01T00:00:00.000Z'
+      },
+    }).as('getUser');
+
+    cy.get('input[formControlName=email]').type("yoga@studio.com");
+    cy.get('input[formControlName=password]').type(`${"test!1234"}{enter}{enter}`);
+
+    cy.url().should('include', '/sessions');
+
+    cy.get('span.link[routerLink="me"]')
+      .should('be.visible')  // Vérifie qu'elle est visible
+      .and('contain', 'Account')  // Vérifie que le texte est bien "Account"
+      .click();  // Clique dessus
+
+    cy.wait('@getUser');
+
+    cy.go('back');
+    cy.url().should('include', '/sessions');
+  });
+
+  it('When he clicks on "Delete account Then he should be able to delete his account.', () => {
+
+    cy.intercept('POST', '/api/auth/login', {
+      body: {
+        id: 1,
+        username: 'userName',
+        firstName: 'John',
+        lastName: 'Doe',
+        admin: false
+      },
+    }).as('login');
+
+    cy.intercept('GET', '/api/user/1', {
+      body: {
+        id: 2,
+        username: 'userName',
+        firstName: 'John',
+        lastName: 'Doe',
+        email: 'yoga@studio.com',
+        admin: false,
+        createdAt: '2025-01-01T00:00:00.000Z',
+        updatedAt: '2025-02-01T00:00:00.000Z'
+      },
+    }).as('getUser');
+
+    cy.get('input[formControlName=email]').type("yoga@studio.com");
+    cy.get('input[formControlName=password]').type(`${"test!1234"}{enter}{enter}`);
+
+    cy.url().should('include', '/sessions');
+
+    cy.get('span.link[routerLink="me"]')
+      .should('be.visible')  // Vérifie qu'elle est visible
+      .and('contain', 'Account')  // Vérifie que le texte est bien "Account"
+      .click();  // Clique dessus
+
+    cy.wait('@getUser');
+
+    cy.get('button').contains('Detail').click();
+
+    cy.wait('@deleteUser').then(() => {
+      cy.contains('Your account has been deleted !').should(
+        'be.visible'
+      );
+      cy.url().should('include', '/');
+    });
+  });
+})
