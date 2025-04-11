@@ -63,4 +63,40 @@ describe('register spec', () => {
 
     cy.get('span.error').should('contain', 'An error occurred');
   });
+
+  it('should disable button if first name is empty', () => {
+    cy.get('input[formControlName=firstName]').clear();
+    cy.get('input[formControlName=lastName]').type('Doe');
+    cy.get('input[formControlName=email]').type('doe@test.com');
+    cy.get('input[formControlName=password]').type('test!1234');
+
+    cy.get('button[type="submit"]').should('be.disabled');
+  });
+
+  it('should disable button if last name is empty', () => {
+    cy.get('input[formControlName=firstName]').type('John');
+    cy.get('input[formControlName=lastName]').clear();
+    cy.get('input[formControlName=email]').type('john@test.com');
+    cy.get('input[formControlName=password]').type('test!1234');
+
+    cy.get('button[type="submit"]').should('be.disabled');
+  });
+
+  it('should disable button if email is empty', () => {
+    cy.get('input[formControlName=firstName]').type('John');
+    cy.get('input[formControlName=lastName]').type('Doe');
+    cy.get('input[formControlName=email]').clear();
+    cy.get('input[formControlName=password]').type('test!1234');
+
+    cy.get('button[type="submit"]').should('be.disabled');
+  });
+
+  it('should disable button if password is empty', () => {
+    cy.get('input[formControlName=firstName]').type('John');
+    cy.get('input[formControlName=lastName]').type('Doe');
+    cy.get('input[formControlName=email]').type('john@test.com');
+    cy.get('input[formControlName=password]').clear();
+
+    cy.get('button[type="submit"]').should('be.disabled');
+  });
 });
